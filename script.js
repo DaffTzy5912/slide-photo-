@@ -1,12 +1,9 @@
 let slider = document.querySelector(".slider");
 let slides = document.querySelectorAll(".slide");
-const slideWidth = slides[0].offsetWidth + 20; // Lebar termasuk margin
-let isSwiping = false;
-let startX = 0;
+const slideWidth = slides[0].offsetWidth + 20; // Termasuk margin
 let moveX = 0;
-let manualSlide = false;
 let autoSlideInterval;
-let speed = 0.5; // Kecepatan auto-slide
+let speed = 1;
 
 // **Duplicate slides untuk efek infinite**
 slider.innerHTML += slider.innerHTML;
@@ -17,56 +14,49 @@ slider.style.transform = `translateX(${-slideWidth}px)`;
 
 function startAutoSlide() {
     autoSlideInterval = setInterval(() => {
-        if (!manualSlide) {
-            moveX -= speed;
-            slider.style.transform = `translateX(${moveX}px)`;
+        moveX -= speed;
+        slider.style.transform = `translateX(${moveX}px)`;
 
-            // **Reset posisi jika sudah sampai akhir**
-            if (Math.abs(moveX) >= (totalSlides / 2) * slideWidth) {
-                moveX = 0;
-                slider.style.transition = "none"; // Hilangkan animasi saat reset
-                slider.style.transform = `translateX(${moveX}px)`;
-            } else {
-                slider.style.transition = "transform 0.05s linear"; // Animasi smooth
-            }
+        if (Math.abs(moveX) >= (totalSlides / 2) * slideWidth) {
+            moveX = 0;
+            slider.style.transition = "none";
+            slider.style.transform = `translateX(${moveX}px)`;
+        } else {
+            slider.style.transition = "transform 0.1s linear";
         }
     }, 16);
 }
 
-// **Geser manual saat swipe**
-slider.addEventListener("touchstart", (e) => {
-    startX = e.touches[0].clientX;
-    isSwiping = true;
-    manualSlide = true;
-    clearInterval(autoSlideInterval);
-});
-
-slider.addEventListener("touchmove", (e) => {
-    if (!isSwiping) return;
-    let deltaX = e.touches[0].clientX - startX;
-    slider.style.transition = "none";
-    slider.style.transform = `translateX(${moveX + deltaX}px)`;
-});
-
-slider.addEventListener("touchend", (e) => {
-    isSwiping = false;
-    let deltaX = e.changedTouches[0].clientX - startX;
-
-    // **Deteksi swipe**
-    if (deltaX > 50) {
-        moveX += slideWidth;
-    } else if (deltaX < -50) {
-        moveX -= slideWidth;
-    }
-
+// **Tombol navigasi manual**
+document.getElementById("prevBtn").addEventListener("click", () => {
+    moveX += slideWidth;
     slider.style.transition = "transform 0.4s ease-out";
     slider.style.transform = `translateX(${moveX}px)`;
+});
 
-    // **Mulai auto-slide kembali setelah jeda**
+document.getElementById("nextBtn").addEventListener("click", () => {
+    moveX -= slideWidth;
+    slider.style.transition = "transform 0.4s ease-out";
+    slider.style.transform = `translateX(${moveX}px)`;
+});
+
+// **Interaksi overlay**
+const overlay = document.getElementById("overlay");
+const overlayImage = document.getElementById("overlayImage");
+
+document.querySelectorAll(".slide img").forEach((img) => {
+    img.addEventListener("click", function () {
+        overlayImage.src = this.src;
+        overlay.classList.add("active");
+        overlay.style.display = "flex";
+    });
+});
+
+overlay.addEventListener("click", function () {
+    overlay.classList.remove("active");
     setTimeout(() => {
-        manualSlide = false;
-        startAutoSlide();
-    }, 2000);
+        overlay.style.display = "none";
+    }, 300);
 });
 
 // **Mulai auto-slide**
