@@ -70,20 +70,3 @@ h1 {
 .overlay.active img {
     transform: scale(1);
 }
-
-.slide img {
-    transition: transform 0.2s ease-out;
-}
-
-.slide:hover img {
-    transform: scale(1.05);
-}
-
-/* Efek rotasi saat hover */
-.slide {
-    perspective: 1000px;
-}
-
-.slide:hover {
-    transform: rotateY(10deg) scale(1.05);
-}
