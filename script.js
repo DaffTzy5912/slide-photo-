@@ -69,17 +69,5 @@ slider.addEventListener("touchend", (e) => {
     }, 2000);
 });
 
-function updateActiveSlide() {
-    let slides = document.querySelectorAll(".slide");
-    slides.forEach(slide => slide.classList.remove("active-slide"));
-
-    // Ambil slide yang ada di tengah
-    let middleIndex = Math.round(Math.abs(currentX) / slideWidth);
-    slides[middleIndex]?.classList.add("active-slide");
-}
-
-// Panggil ini setelah setiap perpindahan slide
-updateActiveSlide();
-
 // **Mulai auto-slide**
 startAutoSlide();
