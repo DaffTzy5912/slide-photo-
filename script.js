@@ -5,44 +5,38 @@ const slideWidth = slides[0].offsetWidth + 20; // Termasuk margin
 let isSwiping = false;
 let startX = 0;
 let currentX = -slideWidth;
-let autoSlide;
-let manualSlide = false; // Cek jika user menggeser manual
+let velocity = 0.5;
+let autoSlideInterval;
+let manualSlide = false;
 
 slider.style.transform = `translateX(${currentX}px)`;
 
-// === AUTO SLIDE DENGAN SMOOTH LOOP ===
 function startAutoSlide() {
-    autoSlide = requestAnimationFrame(() => {
+    autoSlideInterval = setInterval(() => {
         if (!manualSlide) {
-            currentX -= 0.5; // Smooth scrolling lebih lambat
+            currentX -= velocity;
             slider.style.transform = `translateX(${currentX}px)`;
         }
 
-        // Jika sudah sampai akhir, reset dengan transisi smooth
         if (Math.abs(currentX) >= (totalSlides - 1) * slideWidth) {
-            setTimeout(() => {
-                slider.style.transition = "none";
-                currentX = -slideWidth;
-                slider.style.transform = `translateX(${currentX}px)`;
-            }, 300); // Tunggu sebelum reset biar tidak patah
+            slider.style.transition = "none";
+            currentX = -slideWidth;
+            slider.style.transform = `translateX(${currentX}px)`;
         }
-
-        startAutoSlide(); // Looping terus menerus
-    });
+    }, 16);
 }
 
-// === SWIPE GESTURE (TOUCH) ===
 slider.addEventListener("touchstart", (e) => {
     startX = e.touches[0].clientX;
     isSwiping = true;
     manualSlide = true;
-    cancelAnimationFrame(autoSlide);
+    clearInterval(autoSlideInterval);
 });
 
 slider.addEventListener("touchmove", (e) => {
     if (!isSwiping) return;
     let moveX = e.touches[0].clientX - startX;
-    slider.style.transition = "none"; 
+    slider.style.transition = "none";
     slider.style.transform = `translateX(${currentX + moveX}px)`;
 });
 
@@ -66,29 +60,22 @@ slider.addEventListener("touchend", (e) => {
     }, 2000);
 });
 
-// === ZOOM-IN & BLUR EFFECT ===
-let overlay = document.querySelector(".overlay");
-let overlayImage = document.querySelector(".overlay img");
+startAutoSlide();
 
-// Saat slide diklik, tampilkan overlay
-document.querySelectorAll(".slide").forEach(slide => {
-    slide.addEventListener("click", () => {
-        let img = slide.querySelector("img");
-        let bgColor = getComputedStyle(slide).backgroundColor || "rgba(0, 0, 0, 0.5)";
+let overlay = document.getElementById("overlay");
+let overlayImage = document.getElementById("overlayImage");
 
-        if (img) {
-            overlayImage.src = img.src;
-        }
+document.querySelectorAll(".slide img").forEach(img => {
+    img.addEventListener("click", () => {
+        let imgSrc = img.src;
 
-        overlay.style.background = bgColor;
+        overlay.style.display = "flex";
         overlay.classList.add("active");
+        overlayImage.src = imgSrc;
     });
 });
 
-// Saat overlay diklik, sembunyikan kembali
 overlay.addEventListener("click", () => {
+    overlay.style.display = "none";
     overlay.classList.remove("active");
 });
-
-// === JALANKAN AUTO SLIDE ===
-startAutoSlide();

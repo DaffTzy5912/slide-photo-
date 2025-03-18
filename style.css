@@ -13,7 +13,6 @@ h1 {
     margin-top: 20px;
 }
 
-/* === SLIDER CONTAINER === */
 .slider-container {
     width: 100%;
     overflow: hidden;
@@ -22,15 +21,12 @@ h1 {
     touch-action: pan-y;
 }
 
-/* === SLIDER (perbaikan responsivitas) === */
 .slider {
     display: flex;
-    flex-wrap: nowrap;
-    scroll-snap-type: x mandatory;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     will-change: transform;
 }
 
-/* === SLIDE ITEM === */
 .slide {
     min-width: 200px;
     height: 300px;
@@ -38,36 +34,17 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-    color: white;
-    font-weight: bold;
-    border-radius: 10px;
     user-select: none;
-    scroll-snap-align: center;
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.black { background: black; }
-.green { background: green; }
-.blue { background: blue; }
-.red { background: red; }
-
-/* === BUTTON STYLE (Bisa dihapus jika tidak dipakai) === */
-.buttons {
-    margin-top: 20px;
-}
-
-button {
-    padding: 10px 15px;
-    font-size: 16px;
-    font-weight: bold;
+.slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
     cursor: pointer;
-    border: none;
-    margin: 5px;
-    border-radius: 5px;
 }
 
-/* === OVERLAY ZOOM-IN === */
 .overlay {
     position: fixed;
     top: 0;
@@ -76,32 +53,20 @@ button {
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     z-index: 10;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease-in-out;
-}
-
-.overlay.active {
-    opacity: 1;
-    pointer-events: all;
 }
 
 .overlay img {
-    max-width: 60%; /* Lebih kecil dari full layar */
+    max-width: 60%;
     max-height: 60%;
     border-radius: 15px;
-    transform: scale(0.7); /* Mulai dari ukuran lebih kecil */
+    transform: scale(0.7);
     transition: transform 0.3s ease;
 }
 
 .overlay.active img {
-    transform: scale(1); /* Tidak membesar terlalu besar */
+    transform: scale(1);
 }
-
-/* === BUTTON COLORS === */
-.prev { background: #444; color: white; }
-.next { background: #ddd; }
