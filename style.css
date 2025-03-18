@@ -1,0 +1,107 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #777;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+/* === SLIDER CONTAINER === */
+.slider-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    margin-top: 20px;
+    touch-action: pan-y;
+}
+
+/* === SLIDER (perbaikan responsivitas) === */
+.slider {
+    display: flex;
+    flex-wrap: nowrap;
+    scroll-snap-type: x mandatory;
+    will-change: transform;
+}
+
+/* === SLIDE ITEM === */
+.slide {
+    min-width: 200px;
+    height: 300px;
+    margin: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+    font-weight: bold;
+    border-radius: 10px;
+    user-select: none;
+    scroll-snap-align: center;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.black { background: black; }
+.green { background: green; }
+.blue { background: blue; }
+.red { background: red; }
+
+/* === BUTTON STYLE (Bisa dihapus jika tidak dipakai) === */
+.buttons {
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+/* === OVERLAY ZOOM-IN === */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.overlay img {
+    max-width: 60%; /* Lebih kecil dari full layar */
+    max-height: 60%;
+    border-radius: 15px;
+    transform: scale(0.7); /* Mulai dari ukuran lebih kecil */
+    transition: transform 0.3s ease;
+}
+
+.overlay.active img {
+    transform: scale(1); /* Tidak membesar terlalu besar */
+}
+
+/* === BUTTON COLORS === */
+.prev { background: #444; color: white; }
+.next { background: #ddd; }
