@@ -1,31 +1,39 @@
 let slider = document.querySelector(".slider");
 let slides = document.querySelectorAll(".slide");
-const totalSlides = slides.length;
-const slideWidth = slides[0].offsetWidth + 20; // Termasuk margin
+const slideWidth = slides[0].offsetWidth + 20; // Lebar termasuk margin
 let isSwiping = false;
 let startX = 0;
-let currentX = -slideWidth;
-let velocity = 0.5;
-let autoSlideInterval;
+let moveX = 0;
 let manualSlide = false;
+let autoSlideInterval;
+let speed = 0.5; // Kecepatan auto-slide
 
-slider.style.transform = `translateX(${currentX}px)`;
+// **Duplicate slides untuk efek infinite**
+slider.innerHTML += slider.innerHTML;
+let totalSlides = document.querySelectorAll(".slide").length;
+
+// **Set posisi awal**
+slider.style.transform = `translateX(${-slideWidth}px)`;
 
 function startAutoSlide() {
     autoSlideInterval = setInterval(() => {
         if (!manualSlide) {
-            currentX -= velocity;
-            slider.style.transform = `translateX(${currentX}px)`;
-        }
+            moveX -= speed;
+            slider.style.transform = `translateX(${moveX}px)`;
 
-        if (Math.abs(currentX) >= (totalSlides - 1) * slideWidth) {
-            slider.style.transition = "none";
-            currentX = -slideWidth;
-            slider.style.transform = `translateX(${currentX}px)`;
+            // **Reset posisi jika sudah sampai akhir**
+            if (Math.abs(moveX) >= (totalSlides / 2) * slideWidth) {
+                moveX = 0;
+                slider.style.transition = "none"; // Hilangkan animasi saat reset
+                slider.style.transform = `translateX(${moveX}px)`;
+            } else {
+                slider.style.transition = "transform 0.05s linear"; // Animasi smooth
+            }
         }
     }, 16);
 }
 
+// **Geser manual saat swipe**
 slider.addEventListener("touchstart", (e) => {
     startX = e.touches[0].clientX;
     isSwiping = true;
@@ -35,47 +43,43 @@ slider.addEventListener("touchstart", (e) => {
 
 slider.addEventListener("touchmove", (e) => {
     if (!isSwiping) return;
-    let moveX = e.touches[0].clientX - startX;
+    let deltaX = e.touches[0].clientX - startX;
     slider.style.transition = "none";
-    slider.style.transform = `translateX(${currentX + moveX}px)`;
+    slider.style.transform = `translateX(${moveX + deltaX}px)`;
 });
 
 slider.addEventListener("touchend", (e) => {
     isSwiping = false;
-    let endX = e.changedTouches[0].clientX;
-    let difference = endX - startX;
+    let deltaX = e.changedTouches[0].clientX - startX;
 
-    if (difference > 50) {
-        currentX += slideWidth;
-    } else if (difference < -50) {
-        currentX -= slideWidth;
+    // **Deteksi swipe**
+    if (deltaX > 50) {
+        moveX += slideWidth;
+    } else if (deltaX < -50) {
+        moveX -= slideWidth;
     }
 
     slider.style.transition = "transform 0.4s ease-out";
-    slider.style.transform = `translateX(${currentX}px)`;
+    slider.style.transform = `translateX(${moveX}px)`;
 
+    // **Mulai auto-slide kembali setelah jeda**
     setTimeout(() => {
         manualSlide = false;
         startAutoSlide();
     }, 2000);
 });
 
+function updateActiveSlide() {
+    let slides = document.querySelectorAll(".slide");
+    slides.forEach(slide => slide.classList.remove("active-slide"));
+
+    // Ambil slide yang ada di tengah
+    let middleIndex = Math.round(Math.abs(currentX) / slideWidth);
+    slides[middleIndex]?.classList.add("active-slide");
+}
+
+// Panggil ini setelah setiap perpindahan slide
+updateActiveSlide();
+
+// **Mulai auto-slide**
 startAutoSlide();
-
-let overlay = document.getElementById("overlay");
-let overlayImage = document.getElementById("overlayImage");
-
-document.querySelectorAll(".slide img").forEach(img => {
-    img.addEventListener("click", () => {
-        let imgSrc = img.src;
-
-        overlay.style.display = "flex";
-        overlay.classList.add("active");
-        overlayImage.src = imgSrc;
-    });
-});
-
-overlay.addEventListener("click", () => {
-    overlay.style.display = "none";
-    overlay.classList.remove("active");
-});
